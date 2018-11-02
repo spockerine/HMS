@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Colrolib Templates">
+    <meta name="author" content="Colrolib">
+    <meta name="keywords" content="Colrolib Templates">
+
+    <!-- Title Page-->
+    <title>Search</title>
+
+    <!-- Icons font CSS-->
+    <link href="/static/vendor/mdi-font/css/material-design-iconic-font.min.css" rel="stylesheet" media="all">
+    <link href="/static/vendor/font-awesome-4.7/css/font-awesome.min.css" rel="stylesheet" media="all">
+    <!-- Font special for pages-->
+    <link href="https://fonts.googleapis.com/css?family=Lato:100,100i,300,300i,400,400i,700,700i,900,900i" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+
+    <!-- Vendor CSS-->
+    <link href="/static/vendor/select2/select2.min.css" rel="stylesheet" media="all">
+    <link href="/static/vendor/datepicker/daterangepicker.css" rel="stylesheet" media="all">
+
+    <!-- Main CSS-->
+    <link href="/static/css/main.css" rel="stylesheet" media="all">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+
+
+</head>
+
+<body>
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+            <a class="navbar-brand" href="">Search Bar</a>
+            </div>
+            <ul class="nav navbar-nav">
+            <li class="active"><a href="/">Home</a></li>
+            <!-- <li><a href="#">Page 1</a></li>
+            <li><a href="#">Page 2</a></li> -->
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+            <li><a href="/"><span class="glyphicon glyphicon-user"></span> Back</a></li>
+            </ul>
+        </div>
+    </nav> 
+    <div class="page-wrapper bg-img-1 p-t-200 p-b-120">
+        <div class="wrapper wrapper--w900">
+            <div class="card card-4">
+                <div class="card-body">
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="tab1">
+                            <div>
+                                <div class="input-groupx input-group-bigx">
+                                    <label class="labelx">Search:</label>
+                                    <input class="input--style-1" onkeypress="suggest()" type="text" id="search_txt" placeholder="Doctor or Specialization" required="required">
+                                    <i class="zmdi zmdi-search input-group-symbol"></i>
+                                </div>
+                                <div id="suggestion_box"></div>
+                                
+                                <div class="row row-space">
+                                    
+                                    <button class="btn-submit" onclick="search()">search</button>
+                                    
+                                </div>
+                                <br/><br/>
+                                <div class="card card-4">
+                                    <div class="card-body">
+                                        <div class="tab-content" id="results">
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    
+
+    <!-- Jquery JS-->
+    <script src="/static/vendor/jquery/jquery.min.js"></script>
+    <!-- Vendor JS-->
+    <script src="/static/vendor/select2/select2.min.js"></script>
+    <script src="/static/vendor/jquery-validate/jquery.validate.min.js"></script>
+    <script src="/static/vendor/bootstrap-wizard/bootstrap.min.js"></script>
+    <script src="/static/vendor/bootstrap-wizard/jquery.bootstrap.wizard.min.js"></script>
+    <script src="/static/vendor/datepicker/moment.min.js"></script>
+    <script src="/static/vendor/datepicker/daterangepicker.js"></script>
+
+    <!-- Main JS-->
+    <script src="/static/js/global.js"></script>
+    <script src="/static/js/doctor_search.js"></script>
+
+</body>
+
+</html>

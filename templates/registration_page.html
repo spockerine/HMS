@@ -1,0 +1,167 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Registration</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script type="text/javascript">
+			navigator.getUserMedia = ( navigator.getUserMedia ||
+                         navigator.webkitGetUserMedia ||
+                         navigator.mozGetUserMedia ||
+                         navigator.msGetUserMedia);
+
+     		// var video;
+	      	var webcamStream;
+
+	      	function startWebcam() {
+	      		init();
+	      		console.log('staring webcam');
+	      		video = document.querySelector('video');
+			    var constraints = window.constraints = {
+			      audio: false,
+			      video: true
+			   	};
+				navigator.mediaDevices.getUserMedia(constraints)
+				.then(function(stream) {
+				  var videoTracks = stream.getVideoTracks();
+				  console.log('Got stream with constraints:', constraints);
+				  console.log('Using video device: ' + videoTracks[0].label);
+				  stream.onremovetrack = function() {
+				    console.log('Stream ended');
+				  };
+				  //window.stream = stream; // make variable available to browser console
+				  webcamStream = stream;
+				  video.srcObject = stream;
+				})
+				.catch(function(error) {
+				  if (error.name === 'ConstraintNotSatisfiedError') {
+				    console.log('The resolution ' + constraints.video.width.exact + 'x' +
+				        constraints.video.width.exact + ' px is not supported by your device.');
+				  } else if (error.name === 'PermissionDeniedError') {
+				    console.log('Permissions have not been granted to use your camera and ' +
+				      'microphone, you need to allow the page access to your devices in ' +
+				      'order for the demo to work.');
+				  }
+				  console.log('getUserMedia error: ' + error.name, error);
+				});
+
+				function errorMsg(msg, error) {
+				  //errorElement.innerHTML += '<p>' + msg + '</p>';
+				  if (typeof error !== 'undefined') {
+				    console.log(error);
+				  }
+				}
+			}
+			function stopWebcam() {
+          		webcamStream.stop();
+      		}
+	      	//---------------------
+	      	// TAKE A SNAPSHOT CODE
+	      	//---------------------
+	      	var canvas, ctx;
+
+      		function init() {
+        		// Get the canvas and obtain a context for
+        		// drawing in it
+        		canvas = document.getElementById("myCanvas");
+       			ctx = canvas.getContext('2d');
+      		}
+
+      		function snapshot() {
+        		// Draws current image from the video element into the canvas
+        		ctx.drawImage(video, 0,0, canvas.width, canvas.height);
+        		stopWebcam();
+        		var dataURL = canvas.toDataURL('image/png');
+        		var img = document.getElementById("image").value = dataURL;
+        		var submit_btn = document.getElementById("submit_btn");
+        		submit_btn.disabled = false;
+    			// var videoElement = document.getElementById('video');
+				// videoElement.pause();
+				// videoElement.removeAttribute('src'); // empty source
+				// videoElement.load();
+      		}
+
+			function check_password() {
+				var actual_password = document.getElementById("password").value;
+				var repeat_password = document.getElementById("repassword").value;
+				console.log(actual_password);
+				console.log(repeat_password);
+				var error_box = document.getElementById("password_error");
+				if(actual_password != repeat_password) {
+					error_box.innerHTML = "The entered passwords don't match!";
+				} else {
+					error_box.innerHTML = "";
+				}
+			}
+			function check_username() {
+				$.ajax({
+				  			type: "GET",
+				  			url: "/check_user_name_exists?username=" + $("#uname").val()
+    					}).done(function(o) {
+    		  				$("#username_error").html(o); 
+    					});
+			}
+		</script>
+	</head>
+	<body>
+		<img src="/static/images/hospital.jpeg" alt="HMS" height="50" width="50" float="left" position="relative"></img>
+		<div>
+			<p style="font-size:15px;">HMS</p>
+		</div>
+		
+		<form action="/register" method="post">
+			<table>
+				<tr>
+					<td>First Name</td>
+					<td><input type="text" name="firstname" id="fname"></input></td>
+					<td>Last Name</td>
+					<td><input type="text" name="lastname" id="lname"></input></td>
+				</tr>
+				<tr>
+					<td>Contact number</td>
+					<td><input type="text" name="contact_no" id="contactno"></input></td>
+					<td>Date of Birth</td>
+					<td><input type="date" name="dob" id="dob"></input></td>
+					<td>Gender</td>
+					<td><input type="radio" name="gender" value="Female">Female</input></td>
+					<td><input type="radio" name="gender" value="Male">Male</input></td>
+				</tr>
+				<tr>
+					<td>Username</td>
+					<td><input type="text" name="username" onblur="check_username()" id="uname"></input></td>
+
+					<td>Password</td>
+					<td><input type="password" name="password" id="password"></input></td>
+					<td>Re-type password</td>
+					<td><input type="password" id="repassword" onblur="check_password()"></input></td>
+					<td id="password_error"></td>
+					<td id="username_error"></td>
+				</tr>
+				<tr>
+					<td>Email ID</td>
+					<td><input type="text" name="email" id="emailid"></input></td>
+					<td>
+						<input type="text" id="image" name="image" style="display: none;"></input>
+					</td>
+				</tr>
+			</table>
+			<!-- <button id="submit_btn" onclick="sotre()">Submit</button> -->
+			<input type="submit" value="Register" id = "submit_btn" disabled="true">
+		</form>
+		<table>
+			<tr>
+					<td>Image</td>
+					<td>
+						<button id="image" onclick="startWebcam()">Capture Image</button>
+					</td>
+					<td>
+						<video onclick="snapshot(this);" width=400 height=350 id="video"  autoplay></video>	
+					</td>
+					<td>
+						<canvas id="myCanvas" width="400" height="350" style="display: none"></canvas>
+					</td>
+					
+				</tr>
+		</table>
+		<!-- <iframe src="/webcam" width="100%" height="100%" style="border: none;" scrolling="no"></iframe> -->
+	</body>
+</html>

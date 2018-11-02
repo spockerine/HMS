@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  </head>
+  <body onload="init()">
+    <h1>Take a snapshot of the current video stream</h1>
+   Click on the Start WebCam button.
+     <p>
+    <button onclick="startWebcam();">Start WebCam</button>
+    <button onclick="stopWebcam();">Stop WebCam</button> 
+    <button onclick="snapshot();">Take Snapshot</button> 
+    <button onclick="send();">Send Image to Server</button>
+    </p>
+    <video onclick="snapshot(this);" width=400 height=400 id="video" controls autoplay></video>
+  <p>
+
+        Screenshots : <p>
+      <canvas  id="myCanvas" width="400" height="350"></canvas>  
+  </body>
+  <script>
+      //--------------------
+      // GET USER MEDIA CODE
+      //--------------------
+      navigator.getUserMedia = ( navigator.getUserMedia ||
+                         navigator.webkitGetUserMedia ||
+                         navigator.mozGetUserMedia ||
+                         navigator.msGetUserMedia);
+
+      // var video;
+      var webcamStream;
+
+      function startWebcam() {
+      	video = document.querySelector('video');
+		    var constraints = window.constraints = {
+		      audio: false,
+		      video: true
+		    };
+		    //var errorElement = document.querySelector('#errorMsg');
+
+    		navigator.mediaDevices.getUserMedia(constraints)
+    		.then(function(stream) {
+    		  var videoTracks = stream.getVideoTracks();
+    		  console.log('Got stream with constraints:', constraints);
+    		  console.log('Using video device: ' + videoTracks[0].label);
+    		  stream.onremovetrack = function() {
+    		    console.log('Stream ended');
+    		  };
+    		  //window.stream = stream; // make variable available to browser console
+    		  webcamStream = stream;
+    		  video.srcObject = stream;
+    		})
+    		.catch(function(error) {
+    		  if (error.name === 'ConstraintNotSatisfiedError') {
+    		    console.log('The resolution ' + constraints.video.width.exact + 'x' +
+    		        constraints.video.width.exact + ' px is not supported by your device.');
+    		  } else if (error.name === 'PermissionDeniedError') {
+    		    console.log('Permissions have not been granted to use your camera and ' +
+    		      'microphone, you need to allow the page access to your devices in ' +
+    		      'order for the demo to work.');
+    		  }
+    		  console.log('getUserMedia error: ' + error.name, error);
+    		});
+
+    		function errorMsg(msg, error) {
+    		  //errorElement.innerHTML += '<p>' + msg + '</p>';
+    		  if (typeof error !== 'undefined') {
+    		    console.log(error);
+    		  }
+    		}
+      }
+
+      function stopWebcam() {
+          webcamStream.stop();
+      }
+      //---------------------
+      // TAKE A SNAPSHOT CODE
+      //---------------------
+      var canvas, ctx;
+
+      function init() {
+        // Get the canvas and obtain a context for
+        // drawing in it
+        canvas = document.getElementById("myCanvas");
+        ctx = canvas.getContext('2d');
+      }
+
+      function snapshot() {
+         // Draws current image from the video element into the canvas
+        ctx.drawImage(video, 0,0, canvas.width, canvas.height);
+      }
+
+      function send() {
+      	var dataURL = canvas.toDataURL('image/png');
+      	console.log(dataURL);
+      	$.ajax({
+    		  type: "POST",
+    		  url: "http://localhost:5000/save",
+    		  data: { 
+    		     imgBase64: dataURL
+    		  }
+    		}).done(function(o) {
+    		  console.log('saved'); 
+    		});
+      }
+  </script>
+</html>

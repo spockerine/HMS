@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <title>Appointment</title>
+      <!-- Meta tags -->
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+      <meta name="keywords" content="Doctor Search Form Responsive Widget, Audio and Video players, Login Form Web Template, Flat Pricing Tables, Flat Drop-Downs, Sign-Up Web Templates, Flat Web Templates, Login Sign-up Responsive Web Template, Smartphone Compatible Web Template, Free Web Designs for Nokia, Samsung, LG, Sony Ericsson, Motorola Web Design"
+         />
+      <script>
+         addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); }
+      </script>
+      <!-- Meta tags -->
+      <!-- Calendar -->
+      <link rel="stylesheet" href="/static/css/jquery-ui.css" />
+      <!-- //Calendar -->
+      <!--stylesheets-->
+      <link href="/static/css/style.css" rel='stylesheet' type='text/css' media="all">
+      <!--//style sheet end here-->
+      <link href="//fonts.googleapis.com/css?family=Cuprum:400,700" rel="stylesheet">
+   </head>
+   <body>
+      <h1 class="header-w3ls">
+         Book an Appoiment
+      </h1>
+      <div class="doctor-form">
+         <h2 class="doctor-list-w3l">Book your appointment here!</h2>
+         <form action="/book_appointment" method="post">
+            <div class="main">
+               <div class="form-right-to-w3l">
+                  <select id = "selected_speciality" name="specialization" class="form-control" onchange = "suggest_doctors(this.value)">
+                     <option value="">Select Speciality</option>
+                     {% for speciality in specialities: %}
+                        <option value = "{{ speciality }}">{{ speciality }}</option>
+                    {% endfor %}
+                  </select>
+               </div>
+               <div id = "doctors" class="form-left-to-w3l">
+                </div>
+            </div>
+            <div class="main">
+               <div class="form-left-to-w3l">
+                  <input  id="datepicker1" name="date" type="text" placeholder="Select Date" required="" onchange = "suggest_time(this.value)">
+               </div>
+               <div id = "times" class="form-right-to-w3l">
+                  
+               </div>
+            </div>
+            <div class="clear"></div>
+            <div class="main">
+                <div class="form-left-to-w3l xtend">
+                    <textarea name="details" rows="12" cols="55" placeholder="Please provide necessary details" style="background: none; outline: none; border: 1px solid #fff; color: #fff; padding: 20px;"></textarea>
+                    <div class="clear"></div>
+                 </div>
+            </div>
+            <div class="btnn">
+               <button type="submit">BOOK</button><br>
+            </div>
+         </form>
+      </div>
+      <!--scripts-->
+      <script src='/static/js/jquery-2.2.3.min.js'></script>
+      <!--//scripts-->
+      <!-- //js -->
+      <!-- Calendar -->
+      <script src="/static/js/jquery-ui.js"></script>
+      <script>
+         $(function() {
+         $( "#datepicker,#datepicker1,#datepicker2,#datepicker3" ).datepicker();
+         });
+      </script>
+      <script>
+        function suggest_doctors(specialisation){
+            //alert(specialisation)
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "/doctors_speciality_suggestions?speciality=" + specialisation, false);
+            xhr.send();
+            var myArr = JSON.parse(xhr.responseText);
+
+            var doctors = document.getElementById("doctors");
+            var menu = "<select name = 'doctor_id' id = 'selected_doctor' class = 'form-control'> <option value=''>Select Doctor</option>"
+
+            for(i = 0; i < myArr.length; ++i) {
+                menu += "<option value = '" + myArr[i]._id + "'>" + myArr[i].name + "</option>"; 
+            }
+
+            menu += "</select>"
+
+            doctors.innerHTML = menu;
+
+            //console.log(myArr)
+
+        }
+
+        function suggest_time(date){
+            //alert(date);
+            var xhr = new XMLHttpRequest();
+            var doctor_id = document.getElementById('selected_doctor').value;
+            var speciality = document.getElementById('selected_speciality').value;
+
+            console.log(doctor_id);
+            console.log(speciality);
+            
+            xhr.open("GET", "/date_time_suggestions?date=" + date + "&doctor_id=" + doctor_id + "&speciality=" + speciality, false);
+            xhr.send();
+            var myArr = JSON.parse(xhr.responseText);
+
+            times = document.getElementById("times");
+            time_menu = "<select name = 'time' class='form-control button'><option value = ''> Select a time </option>"
+            
+            for(var i = 0; i < myArr.length; ++i) {
+                time_menu += "<option value = '" + myArr[i] + "'>" + myArr[i] + "</option>"; 
+            }
+            time_menu += "</select><div class='clear'></div>"
+        
+            times.innerHTML = time_menu;
+            
+        }
+      </script>
+      <!-- //Calendar -->
+   </body>
+</html>

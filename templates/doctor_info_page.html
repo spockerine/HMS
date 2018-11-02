@@ -1,0 +1,115 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Doctor Info</title>
+	</head>
+	<script>
+		function suggest() {
+			document.getElementById("suggestion_box").innerHTML = "";
+			var search_txt = document.getElementById("search_txt");
+			if(search_txt.value == "") {
+				document.getElementById("suggestion_box").innerHTML = "";
+			}
+			else {
+				var xhr = new XMLHttpRequest();
+				console.log(xhr.readyState);
+				xhr.open("GET", "/doctor_name_suggestions?name=" + search_txt.value, true);
+
+				
+
+				xhr.onreadystatechange = function() {
+					if(xhr.readyState == 4 && xhr.status == 200){
+						var myArr = JSON.parse(this.responseText);
+						console.log(myArr);
+						display_suggestion(myArr);
+					}
+					//console.log(xhr.readyState);
+				};
+				
+				function display_suggestion(arr) {
+					for (var i = 0; i < arr.length; i++) {
+						div = document.createElement("div");
+						div.style.width = "250px";
+						div.innerHTML = arr[i];
+						div.onclick = suggestion_selected;
+						div.onmouseover = function (e) {
+							this.style.backgroundColor="#CEC5C5"
+						};
+						div.onmouseout = function (e) {
+							this.style.backgroundColor="white"
+						};
+						document.getElementById("suggestion_box").appendChild(div);
+					}
+				}
+				xhr.send();
+				//console.log(xhr.readyState);
+			}
+		}
+
+		function suggestion_selected(e) {
+			document.getElementById("suggestion_box").innerHTML = "";
+			search_txt.value = e.target.innerHTML;
+		}
+
+		function search() {
+			var info_div = document.getElementById("info_div");
+			var search_txt = document.getElementById("search_txt");
+			info_div.innerHTML = "";
+			var xhr = new XMLHttpRequest();
+			console.log(xhr.readyState);
+			xhr.open("POST", "/search", true);
+
+			xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");			
+
+			xhr.onreadystatechange = function() {
+				if(xhr.readyState == 4 && xhr.status == 200){
+					var myArr = JSON.parse(this.responseText);
+					console.log(myArr);
+					display_search(myArr);
+				}
+				//console.log(xhr.readyState);
+			};
+			
+			function display_search(arr) {
+				for (var i = 0; i < arr.length; i++) {
+					div = document.createElement("div");
+					// div.style.width = "250px";
+					div.innerHTML = 
+							"Name: " + arr[i].firstname + " " + arr[i].lastname + "<br/>" + 
+							"DOB: "	 + arr[i].dob + "<br/>" + 
+							"Gender: " + arr[i].gender + "<br/>" + 
+							"Specialisation: " + arr[i].specialisation + "<br/>" + 
+							"Highest Qualification: " + arr[i].highest_qualification + "<br/>" +
+							"About: " + arr[i].about + "<br/>" +
+							"Years of experience: " + arr[i].years_of_experience + "<br/>" +
+							"e-mail: " + '<a href="mailto:' + arr[i].email_id + '">' + arr[i].email_id + "</a>" + "<br/>" 
+							;
+
+					div.onmouseover = function (e) {
+						this.style.backgroundColor="#CEC5C5"
+					};
+					div.onmouseout = function (e) {
+						this.style.backgroundColor="white"
+					};
+					info_div.appendChild(div);
+				}
+			}
+			xhr.send("doctor_name=" + search_txt.value);
+			//console.log(xhr.readyState);
+		}
+		
+	</script>
+	<body>
+		<img src="/static/images/hospital.jpeg" alt="HMS" height="50" width="50" float="left" position="relative"></img>
+		<div>
+			<p style="font-size:15px;">HMS</p>
+		</div>
+		<input type="text" onkeypress="suggest()" id="search_txt" placeholder="Search for Doctor, Specialisation"></input>
+		<div id="suggestion_box"></div>
+		<button id="search_btn" type="submit" onclick="search()">Search</button>
+		<div id="info_div">
+			<!--Fetch from Database-->
+		</div>
+		
+	</body>
+</html>

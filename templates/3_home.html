@@ -1,0 +1,287 @@
+<html>
+<head>
+    <title> ADMIN </title>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/static/css/admin.css" />
+    <script src="/static/js/admin.js"></script>
+    <script>
+        $(function() {
+
+            $('#doctor-form-link').click(function(e) {
+                $("#doctor-form").delay(100).fadeIn(100);
+                $("#nurse-form").fadeOut(100);
+                $("#ward-form").fadeOut(100);
+                $("#icu-form").fadeOut(100);
+                $("#emergency-form").fadeOut(100);
+
+                $('#emergency-form-link').removeClass('active');
+                $('#nurse-form-link').removeClass('active');
+                $('#ward-form-link').removeClass('active');
+                $('#icu-form-link').removeClass('active');
+                
+                $(this).addClass('active');
+                e.preventDefault();
+            });
+            $('#nurse-form-link').click(function(e) {
+                $("#nurse-form").delay(100).fadeIn(100);
+                $("#doctor-form").fadeOut(100);
+                $("#ward-form").fadeOut(100);
+                $("#icu-form").fadeOut(100);
+                $("#emergency-form").fadeOut(100);
+
+                $('#emergency-form-link').removeClass('active');
+                $('#doctor-form-link').removeClass('active');
+                $('#ward-form-link').removeClass('active');
+                $('#icu-form-link').removeClass('active');
+                
+                $(this).addClass('active');
+                e.preventDefault();
+            });
+            $('#emergency-form-link').click(function(e) {
+                $("#emergency-form").delay(100).fadeIn(100);
+                $("#doctor-form").fadeOut(100);
+                $("#nurse-form").fadeOut(100);
+                $("#ward-form").fadeOut(100);
+                $("#icu-form").fadeOut(100);
+                
+                $('#doctor-form-link').removeClass('active');
+                $('#nurse-form-link').removeClass('active');
+                $('#ward-form-link').removeClass('active');
+                $('#icu-form-link').removeClass('active');
+                
+                $(this).addClass('active');
+                e.preventDefault();
+            });
+            $('#ward-form-link').click(function(e) {
+                $("#ward-form").delay(100).fadeIn(100);
+                $("#nurse-form").fadeOut(100);
+                $("#doctor-form").fadeOut(100);
+                $("#icu-form").fadeOut(100);
+                $("#emergency-form").fadeOut(100);
+
+                $('#emergency-form-link').removeClass('active');
+                $('#nurse-form-link').removeClass('active');
+                $('#doctor-form-link').removeClass('active');
+                $('#icu-form-link').removeClass('active');
+                
+                $(this).addClass('active');
+                e.preventDefault();
+            });
+            $('#icu-form-link').click(function(e) {
+                $("#icu-form").delay(100).fadeIn(100);
+                $("#nurse-form").fadeOut(100);
+                $("#ward-form").fadeOut(100);
+                $("#doctor-form").fadeOut(100);
+                $("#emergency-form").fadeOut(100);
+
+                $('#emergency-form-link').removeClass('active');
+                $('#nurse-form-link').removeClass('active');
+                $('#ward-form-link').removeClass('active');
+                $('#doctor-form-link').removeClass('active');
+                
+                $(this).addClass('active');
+                e.preventDefault();
+            });
+
+        });
+    </script>
+
+</head>
+<body>
+    <div class="container">
+            <nav class="navbar navbar-inverse">
+                    <div class="container-fluid">
+                        <div class="navbar-header">
+                        <a class="navbar-brand" href="#">Admin Arena</a>
+                        </div>
+                        <ul class="nav navbar-nav">
+                        <li class="active"><a href="#">Home</a></li>
+                        <!-- <li><a href="#">Page 1</a></li>
+                        <li><a href="#">Page 2</a></li> -->
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                        <li><a href="/logout"><span class="glyphicon glyphicon-user"></span> Log out</a></li>
+                        </ul>
+                    </div>
+                </nav> 
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+                <div class="panel panel-login">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-xs-3">
+                                <a href="#" class="active" id="doctor-form-link">Doctor</a>
+                            </div>
+                            <div class="col-xs-2">
+                                <a href="#" id="nurse-form-link">Nurse</a>
+                            </div>
+                            <div class="col-xs-3">
+                                <a href="#" id="emergency-form-link">Emergency</a>
+                            </div>
+                            <div class="col-xs-2">
+                                <a href="#" id="ward-form-link">Ward</a>
+                            </div>
+                            <div class="col-xs-2">
+                                <a href="#" id="icu-form-link">ICU</a>
+                            </div>
+                        </div>
+                        <hr>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <form id="doctor-form" action="/add_doctor" method="post" role="form" style="display: block;">
+                                    <div class="form-group">
+                                        <input type="text" name="name" id="name" tabindex="1" class="form-control" placeholder="Name" value="">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" name="username" id="username" tabindex="2" class="form-control" placeholder="Username">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="password" name="password" id="password" tabindex="1" class="form-control" placeholder="Password" value="">
+                                    </div>
+                                    Date of Birth<br/>
+                                    <div class="form-group">
+                                        <input placeholder="Date of Birth" name="dob" class="textbox-n" type="text" onfocus="(this.type='date')"  id="date">
+                                        <!-- <input type="date" name="dob" id="dob" tabindex="2" class="form-control" placeholder="Date of birth"> -->
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="email" name="email" id="email" tabindex="2" class="form-control" placeholder="Email ID">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" name="phone" id="phone" tabindex="2" class="form-control" placeholder="Phone Number">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" name="check_in_time" id="check_in_time" tabindex="2" class="form-control" placeholder="Check In Time hh:mm">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" name="check_out_time" id="check_out_time" tabindex="2" class="form-control" placeholder="Check Out Time hh:mm">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" name="avg_time_per_patient" id="avg_time_per_patient" tabindex="2" class="form-control" placeholder="Average time per patient (minutes)">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" name="qualification" id="qualification" tabindex="2" class="form-control" placeholder="Highest Qualification">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" name="specialization" id="specialization" tabindex="2" class="form-control" placeholder="Specialization">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" name="achievements" id="achievements" tabindex="2" class="form-control" placeholder="Achievements">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" name="experience" id="experience" tabindex="2" class="form-control" placeholder="Years Of Experience">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <textarea name="about" rows="5" cols="30" class="form-control" placeholder="About Doctor"> </textarea>
+                                        <!-- <input type="text" name="username" id="username" tabindex="2" class="form-control" placeholder="Username"> -->
+                                    </div>
+                                    
+                                    
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-sm-6 col-sm-offset-3">
+                                                <input type="submit" name="login-submit" id="login-submit" tabindex="4" class="form-control btn btn-login" value="Add">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                                <form id="nurse-form" action="/add_nurse" method="post" role="form" style="display: none;">
+
+                                    <div class="form-group">
+                                        <input type="text" name="name" id="name" tabindex="1" class="form-control" placeholder="Name" value="">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" name="username" id="username" tabindex="2" class="form-control" placeholder="Username">
+                                    </div>
+                                    Date of Birth<br/>
+                                    <div class="form-group">
+                                        <input placeholder="Date of Birth" name="dob" class="textbox-n" type="text" onfocus="(this.type='date')"  id="date">
+                                        <!-- <input type="date" name="dob" id="dob" tabindex="2" class="form-control" placeholder="Date of birth"> -->
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="email" name="email" id="email" tabindex="2" class="form-control" placeholder="Email ID">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" name="phone" id="phone" tabindex="2" class="form-control" placeholder="Phone Number">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" name="check_in_time" id="check_in_time" tabindex="2" class="form-control" placeholder="Check In Time hh:mm">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" name="check_out_time" id="check_out_time" tabindex="2" class="form-control" placeholder="Check Out Time hh:mm">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" name="qualification" id="qualification" tabindex="2" class="form-control" placeholder="Highest Qualification">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="text" name="experience" id="experience" tabindex="2" class="form-control" placeholder="Years Of Experience">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <textarea name="about" rows="5" cols="30" class="form-control" placeholder="About Nurse"> </textarea>
+                                        <!-- <input type="text" name="username" id="username" tabindex="2" class="form-control" placeholder="Username"> -->
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-sm-6 col-sm-offset-3">
+                                                <input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-register" value="Add Nurse">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                                <form id="emergency-form" action="/add_emergency_department" method="post" role="form" style="display: none;">
+                                    <div class="form-group">
+                                        <input type="text" name="username" id="username" tabindex="1" class="form-control" placeholder="Username" value="">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="password" name="password" id="password" tabindex="2" class="form-control" placeholder="Password">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="password" name="confirm-password" id="confirm-password" tabindex="2" class="form-control" placeholder="Confirm Password">
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-sm-6 col-sm-offset-3">
+                                                <input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-register" value="Add Emergency Dept.">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                                <form id="ward-form" action="/ward_info" method="post" role="form" style="display: none;">
+                                    <div class="form-group">
+                                        <input type="text" name="wards" id="wards" tabindex="1" class="form-control" placeholder="Number of wards in this hospital" value="">
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-sm-6 col-sm-offset-3">
+                                                <input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-register" value="Add ward details">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                                <form id="icu-form" action="/icu_info" method="post" role="form" style="display: none;">
+                                    <div class="form-group">
+                                        <input type="icu" name="icu" id="icu" tabindex="1" class="form-control" placeholder="Number of ICUs in the hospital" value="">
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="col-sm-6 col-sm-offset-3">
+                                                <input type="submit" name="register-submit" id="register-submit" tabindex="4" class="form-control btn btn-register" value="Add ICU details">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

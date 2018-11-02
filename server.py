@@ -52,10 +52,10 @@ def about():
 def register():
 	
 	if request.method == "GET":
-		return render_template("registration_page.html")
+		return render_template("register.html")
 	
 	else:
-		print("here")
+		#print("here")
 		
 		doc = {
 				"_id" 				: request.form["username"],
@@ -76,7 +76,7 @@ def register():
 		collection.insert_one(doc)
 		
 		# return "Registered successfully"
-		resp = render_template(str(2) + "_home.html", name = doc['name'])
+		resp = make_response(render_template(str(2) + "_home.html", name = doc['firstname'] + " " + doc['lastname']))
 		resp.set_cookie("id", doc['_id'])
 				
 		return resp

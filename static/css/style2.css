@@ -66,6 +66,12 @@ label.text {
     color: #009688;
 	font-family: 'PT Sans Caption', sans-serif;
 }
+.hidden {
+	display: none;
+}
+.visible {
+	display: block;
+}
 label.w3l-set {
     font-size: 15px;
     font-weight: 500;
@@ -84,7 +90,7 @@ ul li {
     text-align: center;
     margin: 10px 0 0;
 }
-input[type="text"], input[type="email"] {
+input[type="text"], input[type="email"], input[type="password"] {
     font-size: 15px;
     font-weight: 500;
     text-transform: capitalize;
@@ -251,7 +257,7 @@ footer a {
 		width: 5%;
 		margin-right: 2px;
 	}
-	input[type="text"], input[type="email"]{
+	input[type="text"], input[type="email"], input[type="password"]{
 		width: 92%;
 	}
 	select.form-control, select.form-contro2, select.form-contro3{
@@ -259,7 +265,7 @@ footer a {
 	}
 }
 @media(max-width:640px){
-	input[type="text"], input[type="email"] {
+	input[type="text"], input[type="email"], input[type="password"] {
 	  width: 92%;
 	}
 	select.form-control ,select.form-contro2,select.form-contro3{
@@ -283,7 +289,7 @@ footer a {
 	select.form-control, select.form-contro2, select.form-contro3 {
 		width: 90%;
 	}
-	input[type="text"], input[type="email"] {
+	input[type="text"], input[type="email"], input[type="password"] {
 		width: 90%;
 	}
 	footer {

@@ -1,12 +1,7 @@
-<!--author: W3layouts
-author URL: http://w3layouts.com
-License: Creative Commons Attribution 3.0 Unported
-License URL: http://creativecommons.org/licenses/by/3.0/
--->
 <!DOCTYPE html>
 <html>
 <head>    
-<title>Library Membership Form A Flat Responsive Widget Template :: w3layouts</title>
+<title>Register</title>
 <!-- meta_tags-->
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -17,30 +12,49 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 <!--css_files-->
 	<link rel="stylesheet" href="/static/css/jquery-ui2.css"/>
 	<link href="/static/css/style2.css" rel="stylesheet" type="text/css" media="all"/><!--stylesheet-->
+	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 	<link rel="stylesheet" href="/static/css/font-awesome.css"><!--font_wesome_icons-->
 	<link href="//fonts.googleapis.com/css?family=PT+Sans+Caption" rel="stylesheet"><!--online_fonts-->
 	<link href="//fonts.googleapis.com/css?family=Old+Standard+TT" rel="stylesheet"><!--online_fonts-->
+	<link rel="stylesheet" href="/static/css/button.css">
 <!--//css_files-->
 </head>
 <body>
+		<div class="container">
+				<nav class="navbar navbar-inverse">
+						<div class="container-fluid">
+							<div class="navbar-header">
+							<a class="navbar-brand" href="#">Registration</a>
+							</div>
+							<ul class="nav navbar-nav">
+							<li class="active"><a href="/">Home</a></li>
+							<!-- <li><a href="#">Page 1</a></li>
+							<li><a href="#">Page 2</a></li> -->
+							</ul>
+							<ul class="nav navbar-nav navbar-right">
+							<!-- <li><a href="/logout"><span class="glyphicon glyphicon-user"></span> Log out</a></li> -->
+							</ul>
+						</div>
+					</nav>
+			</div>
 <div class="w3l-head">
-<h1>library membership form</h1>
+<h1>Register kiya toh life Jingalala</h1>
 </div>
 <div class="w3ls-form">
-<form action="#" medthod="post">
+<form action="/register" method="post">
 		<div class="w3l-last-grid1">
 			<div class="w3l-grid1">
 				<label class="text">First name</label>
 				<div class="w3l-div">
 					<i class="fa fa-user" aria-hidden="true"></i>
-					<input type="text" name="name" placeholder="first name" required=""/>
+					<input type="text" name="firstname" id="fname" placeholder="first name" required=""/>
 				</div>
 			</div> 
 			<div class="w3l-grid2">
 			<label class="text">Last name</label>
 			<div class="w3l-div">
 				<i class="fa fa-user" aria-hidden="true"></i>
-				<input type="text" name="name" placeholder="last name" required=""/>
+				<input type="text" name="lastname" id="lname" placeholder="last name" required=""/>
 			</div>
 			</div>
 			<div class="clear"></div>
@@ -50,10 +64,10 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 				<label class="text">gender</label>
 				<div class="w3l-div">
 					<i class="fa fa-users" aria-hidden="true"></i>
-					<select class="form-control" required="">
+					<select name="gender" class="form-control" required="">
 						<option>gender</option>
-						<option>Male</option>
-						<option>Female</option>
+						<option value = "Male">Male</option>
+						<option value="Female">Female</option>
 					</select>
 				</div>
 			</div>	
@@ -61,7 +75,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 				<label class="text">date of birth</label>
 				<div class="w3l-div">
 					<i class="fa fa-calendar" aria-hidden="true"></i>
-					<input type="text" class="date" id="datepicker" name="date of birth" placeholder="dob" value="MM/DD/YYYY" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'MM/DD/YYYY';}" required=""/>
+					<input type="text" class="date" id="datepicker" name="dob" placeholder="dob" value="MM/DD/YYYY" onfocus="this.value = '';" onblur="if (this.value == '') {this.value = 'MM/DD/YYYY';}" required=""/>
 				</div>	
 			</div>	
 			<div class="clear"></div>
@@ -71,31 +85,30 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 				<label class="text">Your Email</label>
 				<div class="w3l-div">
 					<i class="fa fa-envelope-o" aria-hidden="true"></i>
-					<input type="email" name="email" placeholder="e-mail" required=""/>
+					<input type="email" name="email" id="emailid" placeholder="e-mail" required=""/>
 				</div>
 			</div>
 			<div class="w3l-grid2">
 				<label class="text">phone number</label>
 				<div class="w3l-div">
 					<i class="fa fa-phone" aria-hidden="true"></i>
-					<input type="text" name="contact" placeholder="phone number" required=""/>
+					<input type="text" name="contact_no" id="contactno" placeholder="phone number" required=""/>
 				</div>
 			</div>
 			<div class="clear"></div>
 		</div>
 		<div class="w3l-last-grid1">
 			<div class="w3l-grid1">	
-				<label class="text">address</label>
+				<label class="text">Username</label>
 				<div class="w3l-div">
-					<i class="fa fa-location-arrow" aria-hidden="true"></i>
-					<input type="text" name="address" placeholder="current address" required=""/>
+					<!-- <i class="fa fa-location-arrow" aria-hidden="true"></i> -->
+					<input type="text" name="username" id="uname" onblur="check_username()" placeholder="Username" required=""/>
 				</div>
 			</div>
 			<div class="w3l-grid2">	
-				<label class="text">city</label>
+				<label class="text">Password</label>
 				<div class="w3l-div">
-					<i class="fa fa-map-marker" aria-hidden="true"></i>
-					<input type="text" name="city" placeholder="city" required=""/>
+					<input type="password" name="password" id="password" placeholder="Password" required=""/>
 				</div>
 			</div>
 			<div class="clear"></div>
@@ -103,59 +116,52 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 		
 		<div class="w3l-right-grid1">
 			<div class="w3l-grid1">
-				<label class="text">state</label>
+				<label class="text">Repeat Password</label>
 				<div class="w3l-div">
-					<i class="fa fa-map-marker" aria-hidden="true"></i>
-					<input type="text" name="state" placeholder="state/province" required=""/>
+					<input type="password" name="repassword" id="repassword" onblur="check_password()" placeholder="Repeat password" required=""/>
 				</div>
 			</div>
 			<div class="w3l-grid2">
-				<label class="text">zipcode</label>
-				<div class="w3l-div">
-					<i class="fa fa-address-card-o" aria-hidden="true"></i>
-					<input type="text" name="zipcode" placeholder="postal" required=""/>
+				<div class="">
+					<br/>
+					<br/>
+					<input class= "hidden" id="errorbox" type="text" style="color:red;" value="" readonly/>
 				</div>
 			</div>
 			<div class="clear"></div>
 		</div>
 		
 		<div class="w3l-right-grid1">
-		<div class="w3l-grid1">
-			<label class="text">takes member ship <span>?</span></label>
-				<div class="w3l-div">
-				<i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-					<select class="form-contro3" required="">
-						<option>membership</option>
-						<option>yearly</option>
-						<option>quarterly</option>
-						<option>weakly</option>
-						<option>never</option>
-					</select>
-				</div>
+		<div class="w3l-grid">
+			<div class="w3l-div">
+				<div id="image" class="btn from-top" onclick="startWebcam()">Capture Image</div>
+				<!-- <button id="image" onclick="startWebcam()">Capture Image</button> -->
+			</div>
 		</div>	
-			<label class="text">which type of books</label>
+		<div class="w3l-right-grid1">
 			<div class="w3l-grid2">
-				<div class="w3l-div">
-					<i class="fa fa-book" aria-hidden="true"></i>
-					<select class="form-contro2" required="">
-						<option>select books</option>
-						<option>history</option>
-						<option>science</option>
-						<option>social</option>
-						<option>mathematics</option>
-					</select>
-				</div>
+				<!-- <div class="w3l-div"> -->
+					<video onclick="snapshot(this);" width=400 height=350 id="video"  autoplay></video>
+				<!-- </div> -->
 			</div>
 		</div>
+		<div class="w3l-right-grid1">
+			<div class="w3l-grid2">
+				
+				<canvas id="myCanvas" width="400" height="350" style="display: none"></canvas>
+			</div>
+		</div>
+
 		<div class="clear"></div>
 		<div class="w3ls-submit">
+			<input type="text" id="im" name="image" style="display:none">
 			<input type="submit" value="add a member">
 		</div>
 </form>
 </div>
-<footer>&copy; 2018 library membership Form. All Rights Reserved | Design by <a href="http://w3layouts.com/"> W3layouts</a></footer>
 
-<!-- Default-JavaScript --> <script type="text/javascript" src="js/jquery-2.2.3.min.js"></script>
+<script type="text/javascript" src="/static/js/register.js"></script>
+<!-- Default-JavaScript --> <script type="text/javascript" src="/static/js/jquery-2.2.3.min.js"></script>
 
 <!-- Calendar -->
 <script src="/static/js/jquery-ui.js"></script>

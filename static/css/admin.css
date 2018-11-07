@@ -3,7 +3,8 @@ body {
     background: url(/static/images/admin.png);
     background-repeat: no-repeat;
     background-position: center;
-    background-size: cover;
+	background-size: cover;
+	opacity: 20;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;

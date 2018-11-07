@@ -1,8 +1,113 @@
 <html>
     <head>
-        <title> Patient Home </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+        <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+        <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+        <script src="http://fb.me/JSXTransformer-0.12.2.js"></script> -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.24.0/babel.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react-dom.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+        <link rel="stylesheet" href="/static/css/patient.css" />
+        <title> Home </title>
+        <script type="text/javascript">
+            /* Toggle between adding and removing the "responsive" class to topnav when the user clicks on the icon */
+            function myFunction() {
+                var x = document.getElementById("myTopnav");
+                if (x.className === "topnav") {
+                    x.className += " responsive";
+                } else {
+                    x.className = "topnav";
+                }
+            } 
+        </script>
+        <script type="text/babel" src="/static/js/patient_button.js"></script>
+        <!-- <script src="/static/js/patient_button.js"></script> -->
+
+        <link rel="stylesheet" href="/static/css/fancy_button.css">
+        <style>
+            .scroll-area{
+                height:calc(100% - 200px);
+                overflow-y:scroll;
+            }
+        </style>
+        <style>
+            .blur {
+                /*width:100%;*/
+                /* height:100%; */
+                background-size:cover;
+                -webkit-filter: blur(4px);
+                -moz-filter: blur(4px);
+                -ms-filter: blur(4px);
+                -o-filter: blur(4px);
+                filter: blur(4px);
+            }
+        </style>
+        <script>
+            function click() {
+                alert("clicked");
+            }
+        </script>
     </head>
     <body>
-        <h1>Patient Homepage</h1>
+        <div class="topnav" id="myTopnav">
+            <a href="#" class="active">{{name}}</a>
+            <a href="#">Profile</a>
+            <a href="/provide_feedback">Feedback</a>
+            <a href="/logout" style= "float: right">Log out</a>
+            <a href="javascript:void(0);" class="icon" onclick="myFunction()">&#9776;</a>
+        </div> 
+        
+        <div class="container-fluid">
+            
+            <div class = "row"> 
+                <div class="col-sm-3 col-md-6 col-lg-4">
+                    
+                    <img src='{{image}}' alt="" class="profile_image">
+                    <a href="#"> <div id="button1" style="padding: 50"></div></a> 
+                    <a href="/book_appointment"> <div id="button2" style="padding: 50"></div></a>
+                    <a href="/cancel_appointment"> <div id="button3" style="padding: 50"></div></a>
+                    <a href="#"> <div id="button4" style="padding: 50"></div></a>
+                </div>
+                <!-- <div class="col-md-12"> -->
+                <br/><br/><br/><br/><br/><br/><br/><br/><br/>
+                {% if appointments|length > 0 %}
+                    <div class="col-sm-6 col-md-6 col-lg-8 scroll-area" style="height: 100%; background-image: url(/static/images/grey.jpeg)" >
+                        <br/><br/><br/><br/><br/><br/>
+                        <div class="main-timeline " style="padding: 50">
+                            
+                            {% for i in appointments: %}
+                                
+                                {% for j in appointments[i]: %}
+                                    <div class="timeline">
+                                        <div class="icon"></div>
+                                        <div class="date-content">
+                                            <div class="date-outer">
+                                                <span class="date">
+                                                    <span class="month">{{i}}</span><br/>
+                                                    <span class="month">{{j}}</span><br/>
+                                                    <span class="month">{{ appointments[i][j]["doctor_name"] }}</span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <!-- <h3 class="title">Web Design</h3> -->
+                                            <p class="description" style="color:white; font-size: 20">
+                                                    {{ appointments[i][j]["details"] }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endfor %}
+                            
+                            
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
     </body>
 </html>

@@ -1,0 +1,38 @@
+<html>
+    <head>
+        <title>Feedbacks</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <!-- <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script> -->
+        <link rel="stylesheet" href="/static/css/feedback.css">
+        <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    </head>
+    <body>
+        <div class="container">
+            <nav class="navbar navbar-inverse">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                    <a class="navbar-brand" href="#">Feedbacks</a>
+                    </div>
+                    <ul class="nav navbar-nav">
+                    <li class="active"><a href="/home">Home</a></li>
+                    <!-- <li><a href="#">Page 1</a></li>
+                    <li><a href="#">Page 2</a></li> -->
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                    <li><a href="/logout"><span class="glyphicon glyphicon-user"></span> Log out</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+        {% for feedback in feedbacks %}
+            <div class="container">
+                <div class="card">
+                <div class="front"><h1 class="header-w3ls">{{feedback["doctor_name"]}}</h1><h3>{{feedback["date"]}}</h3><h3>{{feedback["time"]}}</h3></div>
+                <div class="back">{{feedback["feedback"]}}</div>
+                </div>
+            </div>
+        {% endfor %}
+        <script src="/static/js/feedback_cards.js"></script>      
+        
+    </body>
+</html>

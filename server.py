@@ -76,7 +76,7 @@ def register():
 		collection.insert_one(doc)
 		
 		# return "Registered successfully"
-		resp = make_response(render_template(str(2) + "_home.html", name = doc['firstname'] + " " + doc['lastname']))
+		resp = make_response(render_template(str(2) + "_home.html", name = doc['firstname'] + " " + doc['lastname'], appointments=doc["appointments"], image = doc['image']))
 		resp.set_cookie("id", doc['_id'])
 				
 		return resp
@@ -127,9 +127,12 @@ def login():
 					print(resp)
 					resp.set_cookie("id", docs['_id'])	
 				else:
-					resp = make_response(render_template(str(int(docs['flag'])) + "_home.html", name = docs['name']))
-					resp.set_cookie("id", docs['_id'])
-				
+					if(int(docs["flag"]) == 1):
+						resp = make_response(render_template(str(int(docs['flag'])) + "_home.html", name=docs["name"]))
+						resp.set_cookie("id", docs['_id'])
+					else:
+						resp = make_response(render_template(str(int(docs['flag'])) + "_home.html", name=docs["firstname"] + " " + docs["lastname"], appointments=docs['appointments'], image=docs["image"]))
+						resp.set_cookie("id", docs['_id'])
 				return resp
 
 				# return "Render page : " + str(int(docs['flag'])) + "_home.html"
@@ -267,6 +270,8 @@ def date_time_suggestions():
 	end_hours = int(doc["check_out_time"].split(":")[0])
 	end_mins = int(doc["check_out_time"].split(":")[1])
 
+	if(end_mins == 0):
+		end_mins = 60
 	print(start_hours)
 	print(start_mins)
 
@@ -276,9 +281,10 @@ def date_time_suggestions():
 	print(avg_time_per_patient)
 
 	print(appointments_date)
-
+	
 	while((start_hours < end_hours) or (not((start_hours == end_hours) and (start_mins <= end_mins)))):
 		appointment_time = str(start_hours) + ":" + str(start_mins)
+		print(appointment_time)
 		if(start_mins == 0):
 			appointment_time += '0'
 		if(appointment_time in appointments_date):
@@ -305,20 +311,61 @@ def book_appointment():
 	else:
 
 		doctor_id = request.form['doctor_id']
+		patient_id = request.cookies.get("id")
 		specialization = request.form['specialization']
 		date = request.form['date']
 		time = request.form['time']
 		details = request.form['details']
 
-		print(doctor_id)
-		print(specialization)
-		print(date)
-		print(time)
-		print(details)
+		# print(doctor_id)
+		# print(specialization)
+		# print(date)
+		# print(time)
+		# print(details)
+		# print(patient_id)
 
 		# save these details into the db for doctor and for patient also
+		collection = db['users']
 
-		return "success"
+		# update doctors data
+		doctor_doc = collection.find_one({"_id": doctor_id, "flag": 1})
+		patient_doc = collection.find_one({"_id": patient_id})
+
+		appointments = doctor_doc['appointments']
+		# print("doctor")
+		# print(appointments)
+
+		try:
+			appointments[date][time] = { "patient_id": patient_id, "patient_name": patient_doc["firstname"] + " " + patient_doc["lastname"], "details": details }
+		except:
+			appointments[date] = { time: { "patient_id": patient_id, "patient_name": patient_doc["firstname"] + " " + patient_doc["lastname"], "details": details } }
+
+		# print(appointments)
+		
+
+		collection.update_one( {"_id": doctor_id}, {"$set": {'appointments': appointments}}, upsert=False )
+		
+
+		# update patients data
+
+		appointments = patient_doc["appointments"]
+
+		# print("patient")
+		# print(appointments)
+
+		try:
+			appointments[date][time] = { "doctor_id": doctor_id, "doctor_name": doctor_doc["name"], "details": details }
+		except:
+			appointments[date] = { time: { "doctor_id": doctor_id, "doctor_name": doctor_doc["name"], "details": details } }
+		
+		# print(appointments)
+
+		collection.update_one(
+			{"_id": patient_id}, 
+			{"$set": {'appointments': appointments}}, 
+			upsert=False)
+
+		return render_template("2_home.html", name = patient_doc["firstname"] + " " + patient_doc["lastname"], appointments = appointments, image = patient_doc["image"] )
  
 @app.route("/add_doctor", methods = ["GET", "POST"])
 def add_doctor():
@@ -490,9 +537,9 @@ def provide_feedback():
 		time = now.split(" ")[1]
 
 		
-		doctor_id = request.form["doctor_id"]
+		doctor_id = request.form["doctor"]
 		specialization = request.form["specialization"]
-		feedback = request.form["details"]
+		feedback = request.form["feedback"]
 		patient_id = request.cookies.get("id")
 
 		collection = db["users"]
@@ -525,10 +572,80 @@ def provide_feedback():
 		speciality = getAllSpecializations()
 		return render_template("feedback.html", specialities = speciality)
 	
+@app.route("/cancel_appointment")
+def cancel_appointment():
+
+	collection = db["users"]
+	doc = collection.find_one({"_id": request.cookies.get("id")}, {"appointments": 1})
+
+	return render_template("cancel_appointment.html", appointments = doc["appointments"])
+
+@app.route("/update_appointment", methods = ["GET"])
+def update_appointment():
+	
+	doctor_id = request.args["doctor_id"]
+	doctor_id = doctor_id[1: len(doctor_id) - 1]
+	patient_id = request.cookies.get("id")
+	date = request.args["date"]
+	time = request.args["time"]
+
+	#print(doctor_id, "***", sep = "")
+
+	print(patient_id)
+	print(date)
+	print(time)
+
+	collection = db["users"]
+
+	doctor_doc = collection.find_one({"_id": doctor_id, "flag": 1})
+	patient_doc = collection.find_one({"_id": patient_id})
+
+	appointments = doctor_doc['appointments']
+
+	del appointments[date][time]
+	print(appointments)
+
+	collection.update_one( {"_id": doctor_id}, {"$set": {'appointments': appointments}}, upsert=False )
+
+	appointments = patient_doc['appointments']
+
+	del appointments[date][time]
+	print(appointments)
+	collection.update_one(
+			{"_id": patient_id}, 
+			{"$set": {'appointments': appointments}}, 
+			upsert=False)	
+
+	return "done"
+
+@app.route("/home")
+def home():
+	username = request.cookies.get("id")
+	if(username):
+		collection = db["users"]
+		doc = collection.find_one({"_id": username}, {"password": 0})
+		flag = int(doc["flag"])
+		if(flag == 1):
+			return render_template("1_home.html", name = doc["name"])
+		elif(flag == 2):
+			return render_template("2_home.html", name = doc["firstname"] + " " + doc["lastname"], image = doc["image"], appointments = doc["appointments"])
+		else:
+			return render_template(str(flag) + "_home.html")
+	else:
+		return render_template("404.html")
+
+@app.route("/all_feedbacks", methods=["GET"])
+def all_feedbacks():
+	feedbacks = []
+	collection = db["feedback"]
+	docs = collection.find({})
+	for doc in docs:
+		feedbacks.append(doc)
+	return render_template("all_feedbacks.html", feedbacks = feedbacks)
+
 @app.route("/test")
 def test():
-	return render_template("register.html")
-
+	return render_template("doctor-patient.html")
 
 if __name__ == '__main__':
 	app.run(host="0.0.0.0", port = 5001, debug = True, threaded = True)

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <title>Cancel Appointment</title>
+      <!-- Meta tags -->
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+      <meta name="keywords" content="Doctor Search Form Responsive Widget, Audio and Video players, Login Form Web Template, Flat Pricing Tables, Flat Drop-Downs, Sign-Up Web Templates, Flat Web Templates, Login Sign-up Responsive Web Template, Smartphone Compatible Web Template, Free Web Designs for Nokia, Samsung, LG, Sony Ericsson, Motorola Web Design"
+         />
+      <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+      <link rel="stylesheet" href="/static/css/patient.css" />
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+
+
+      <script>
+         addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); }
+      </script>
+      <!-- Meta tags -->
+      <!-- Calendar -->
+      <link rel="stylesheet" href="/static/css/jquery-ui.css" />
+      <!-- //Calendar -->
+      <!--stylesheets-->
+      <link href="/static/css/style.css" rel='stylesheet' type='text/css' media="all">
+      <!--//style sheet end here-->
+      <link href="//fonts.googleapis.com/css?family=Cuprum:400,700" rel="stylesheet">
+    </head>
+   <body>
+       <div class="container">
+            <nav class="navbar navbar-inverse">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                    <a class="navbar-brand" href="#">Book Appointment</a>
+                    </div>
+                    <ul class="nav navbar-nav">
+                    <li class="active"><a href="/home">Home</a></li>
+                    <!-- <li><a href="#">Page 1</a></li>
+                    <li><a href="#">Page 2</a></li> -->
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                    <li><a href="/logout"><span class="glyphicon glyphicon-user"></span> Log out</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div> 
+      <h1 class="header-w3ls">
+         Cancel appointment
+      </h1>
+      <div class="doctor-form">
+         <!-- <h2 class="doctor-list-w3l">Book your appointment here!</h2> -->
+        <div class="main-timeline " style="padding: 50;">
+                            
+            {% for i in appointments: %}
+                
+                {% for j in appointments[i]: %}
+                    <div class="timeline">
+                        <div class="icon"></div>
+                        <div class="date-content">
+                            <div class="date-outer" onclick="delete_appointment(this)">
+                                <span class="date">
+                                    <span style="display:none;"> {{ appointments[i][j]["doctor_id"] }} </span>
+                                    <span class="month">{{i}}</span><br/>
+                                    <span class="month">{{j}}</span><br/>
+                                    <span class="month">{{ appointments[i][j]["doctor_name"] }}</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="timeline-content">
+                            <!-- <h3 class="title">Web Design</h3> -->
+                            <p class="description" style="color:white; font-size: 20">
+                                    {{ appointments[i][j]["details"] }}
+                            </p>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>        
+      </div>
+      <!--scripts-->
+      <script src='/static/js/jquery-2.2.3.min.js'></script>
+      <!--//scripts-->
+      <!-- //js -->
+      <!-- Calendar -->
+      <script src="/static/js/jquery-ui.js"></script>
+      <script src="/static/js/cancel_appointment.js"></script>
+      <script>
+         $(function() {
+         $( "#datepicker,#datepicker1,#datepicker2,#datepicker3" ).datepicker();
+         });
+      </script>
+      <script>
+        function suggest_doctors(specialisation){
+            //alert(specialisation)
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "/doctors_speciality_suggestions?speciality=" + specialisation, false);
+            xhr.send();
+            var myArr = JSON.parse(xhr.responseText);
+
+            var doctors = document.getElementById("doctors");
+            var menu = "<select name = 'doctor_id' id = 'selected_doctor' class = 'form-control'> <option value=''>Select Doctor</option>"
+
+            for(i = 0; i < myArr.length; ++i) {
+                menu += "<option value = '" + myArr[i]._id + "'>" + myArr[i].name + "</option>"; 
+            }
+
+            menu += "</select>"
+
+            doctors.innerHTML = menu;
+
+            //console.log(myArr)
+
+        }
+      </script>
+      <!-- //Calendar -->
+   </body>
+</html>

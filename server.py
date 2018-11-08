@@ -6,6 +6,8 @@ import base64
 from pymongo import MongoClient
 from cryptography.fernet import Fernet
 import datetime
+import random
+import collections
 
 key = b'5HFFdBeSChtl1oWaEWwDhTi5Cr7s4LohO5W2zIngmHU='
 cipher_suite = Fernet(key)
@@ -20,6 +22,7 @@ db = client['hms']
 # specializations = ["heart specialist", "neurosurgean", "general physician"]
 
 def getAllSpecializations():
+
 	query = {"flag": 1}
 	specialities = []
 	#db = client['rough']
@@ -36,7 +39,129 @@ def getAllSpecializations():
 	return specialities
 
 	
+def get_free_icu_or_ward_number(what):
 
+	query = {"_id": what}
+	collection = db["hospital_details"]
+
+	doc = collection.find_one(query)
+
+	print("doc: ", doc)
+
+	availability = doc["availability"]
+
+	number = ""
+
+	for i in range(len(availability)):
+		if(int(availability[i]) == 1):
+			availability[i] = 0
+			number += str(i + 1)
+			break
+	
+	if(number):
+		collection.update_one(
+			{"_id": what}, 
+			{"$set": {'availability': availability}}, 
+			upsert=False)
+
+	return number	
+	
+def gimme_a_nurse():
+
+	query = {"flag": 5}
+	collection = db["users"]
+	docs = collection.find(query)
+
+	nurse = []
+
+	for doc in docs:
+		nurse.append(doc)
+	
+	nurse.sort(key = lambda x: len(x["incharge_patients"]))
+
+	now = datetime.datetime.now()
+	time = now.time()
+
+	i = 0
+	while i < len(nurse):
+		start = datetime.datetime.strptime(nurse[i]["check_in_time"], "%H:%M").time()
+		end = datetime.datetime.strptime(nurse[i]["check_out_time"], "%H:%M").time()
+		if(start <= time < end):
+			break
+		i += 1
+	
+	selected_nurse = nurse[i]
+	print("selected_nurse:", selected_nurse)
+	
+	return selected_nurse["_id"]
+
+def gimme_a_doctor(specialization):
+
+	query = {"flag": 1, "specialization": specialization}
+	collection = db["users"]
+	now = datetime.datetime.now()
+	now =  now.strftime("%m/%d/%Y %H:%M")
+	date = now.split(" ")[0]
+	time = now.split(" ")[1]
+	time2 = datetime.datetime.strptime(time, "%H:%M").time()
+
+	docs = collection.find(query, {"_id": 1, "name": 1, "check_in_time": 1, "check_out_time": 1, "avg_time_per_patient": 1, "specialization": 1, "appointments": 1, })
+	
+	doctors = []
+	for doc in docs:
+		start = datetime.datetime.strptime(doc["check_in_time"], "%H:%M").time()
+		end = datetime.datetime.strptime(doc["check_out_time"], "%H:%M").time() 
+		if(start <= time2 < end):
+			doctors.append(doc)
+	
+	random_doctor = False
+	print("doctors: ", doctors)
+	for doctor in doctors:
+		try:
+			appointments_today = doctor["appointments"][date]
+			if appointments_today:
+				for time in appointments_today:
+					start = time
+					hrs = int(start.split(":")[0])
+					mins = int(start.split(":")[1])
+					mins += int(doctor["avg_time_per_patient"])
+					if(mins >= 60):
+						hrs += 1
+						mins = mins % 60
+					end = str(hrs) + ":" + str(mins)
+					start = datetime.datetime.strptime(start, "%H:%M").time()
+					end = datetime.datetime.strptime(end, "%H:%M").time()
+					if(start <= time2 < end):
+						break
+				else:
+					selected_doctor = doctor
+					break
+			else:
+				selected_doctor = doctor
+				break
+		except:
+			print("No appointments on this day")
+			print(date)
+			selected_doctor = doctor
+			break
+	else:
+		print("No doctor is free hence selecting a random doctor")
+		selected_doctor = doctors[random.randint(0, len(doctors) - 1)]
+		random_doctor = True
+	
+	print("selected_doctor: ", selected_doctor)
+
+	return selected_doctor["_id"]
+
+def sorted_appointments_name(_id):
+
+	collection = db["users"]
+	doc = collection.find_one({"_id": _id})
+	date = datetime.datetime.now().date().strftime("%m/%d/%Y")
+	appointments = collections.OrderedDict(sorted(doc["appointments"][date].items()))
+	
+	return appointments, doc["name"]
+	
 
 @app.route('/')
 def homepage():
@@ -128,10 +253,17 @@ def login():
 					resp.set_cookie("id", docs['_id'])	
 				else:
 					if(int(docs["flag"]) == 1):
-						resp = make_response(render_template(str(int(docs['flag'])) + "_home.html", name=docs["name"]))
+						appointments, name = sorted_appointments_name(docs["_id"])
+						resp = make_response(render_template(str(int(docs['flag'])) + "_home.html", name=name, appointments=appointments, date=datetime.datetime.now().date().strftime("%d-%m-%Y")))
+						resp.set_cookie("id", docs['_id'])
+					elif(int(docs["flag"]) == 2):
+						# appointments = sorted_appointments_name(docs["_id"])
+						resp = make_response(render_template(str(int(docs['flag'])) + "_home.html", name=docs["firstname"] + " " + docs["lastname"], appointments=docs["appointments"], image=docs["image"]))
 						resp.set_cookie("id", docs['_id'])
 					else:
-						resp = make_response(render_template(str(int(docs['flag'])) + "_home.html", name=docs["firstname"] + " " + docs["lastname"], appointments=docs['appointments'], image=docs["image"]))
+						specialities = getAllSpecializations()
+						#return render_template("4_home.html", specialities=specialities)
+						resp = make_response(render_template(str(int(docs['flag'])) + "_home.html", specialities=specialities, success=False))
 						resp.set_cookie("id", docs['_id'])
 				return resp
 
@@ -449,7 +581,7 @@ def add_nurse():
 			"qualification": qualification,
 			"experience": experience,
 			"about": about,
-			"incharge_patients": {} # key => patient # value => doctor_id
+			"incharge_patients": {} # key => patient # value => doctor_id/emergency_dept_id
 		}
 
 		collection.insert_one(toInsert)
@@ -626,9 +758,13 @@ def home():
 		doc = collection.find_one({"_id": username}, {"password": 0})
 		flag = int(doc["flag"])
 		if(flag == 1):
-			return render_template("1_home.html", name = doc["name"])
+			appointments, name = sorted_appointments_name(doc["_id"])
+			return render_template("1_home.html", name = name, appointments = appointments, date=datetime.datetime.now().date().strftime("%d-%m-%Y"))
 		elif(flag == 2):
 			return render_template("2_home.html", name = doc["firstname"] + " " + doc["lastname"], image = doc["image"], appointments = doc["appointments"])
+		elif(flag == 4):
+			specialities = getAllSpecializations()
+			return render_template("4_home.html", specialities=specialities, success=False)
 		else:
 			return render_template(str(flag) + "_home.html")
 	else:
@@ -643,9 +779,228 @@ def all_feedbacks():
 		feedbacks.append(doc)
 	return render_template("all_feedbacks.html", feedbacks = feedbacks)
 
+
+@app.route("/gimme_a_ward_number", methods = ["GET"]) 
+def gimme_a_ward_number():
+
+	_id = request.cookies.get("id")
+	if _id == "":
+		return render_template("404.html")
+	else:
+		collection = db["users"]
+		doc = collection.find_one({"_id": _id}, {"flag": 1})
+		if int(doc["flag"]) != 4:
+			return render_template("404.html")
+		else:
+			ward_num = get_free_icu_or_ward_number("wards")
+			if(ward_num):
+				return "ward-" + ward_num
+			return ward_num
+
+@app.route("/gimme_a_icu_number", methods = ["GET"]) 
+def gimme_a_icu_number():
+
+	_id = request.cookies.get("id")
+	if _id == "":
+		return render_template("404.html")
+	else:
+		collection = db["users"]
+		doc = collection.find_one({"_id": _id}, {"flag": 1})
+		if int(doc["flag"]) != 4:
+			return render_template("404.html")
+		else:
+			icu_num = get_free_icu_or_ward_number("icu")
+			if(icu_num):
+				return "icu-" + icu_num
+			return icu_num
+
+@app.route("/assign_nurse", methods = ["GET"])
+def assign_nurse():
+
+	_id = request.cookies.get("id")
+	if _id == "":
+		return render_template("404.html")
+	else:
+		collection = db["users"]
+		doc = collection.find_one({"_id": _id}, {"flag": 1})
+		if int(doc["flag"]) != 4:
+			return render_template("404.html")
+		else:
+			nurse_id = gimme_a_nurse()
+
+			return nurse_id
+
+@app.route("/assign_doctor", methods = ["GET"])
+def assign_doctor():
+
+	_id = request.cookies.get("id")
+	if _id == "":
+		return render_template("404.html")
+	else:
+		collection = db["users"]
+		doc = collection.find_one({"_id": _id}, {"flag": 1})
+		if int(doc["flag"]) != 4:
+			return render_template("404.html")
+		else:
+			specialization = request.args["specialization"]
+
+			doctor_id = gimme_a_doctor(specialization)
+
+			return doctor_id
+
+@app.route("/add_emergency", methods = ["POST"])
+def add_emergency():
+
+	_id = request.cookies.get("id")
+	if _id == "":
+		return render_template("404.html")
+	else:
+		collection = db["users"]
+		doc = collection.find_one({"_id": _id}, {"flag": 1})
+		if int(doc["flag"]) != 4:
+			return render_template("404.html")
+		else:
+			firstname = request.form["firstname"]
+			lastname = request.form["lastname"]
+			age = request.form["age"]
+			gender = request.form["gender"]
+			icu_ward = request.form["icu_ward"]
+			ward_number = request.form["ward_number"]
+			icu_number = request.form["icu_number"]
+			nurse_needed = request.form["nurse_needed"]
+			nurse_id = request.form["nurse_id"]
+			specialization = request.form["specialization"]
+			doctor_id = request.form["doctor_id"]
+			message = request.form["message"]
+			
+			now = datetime.datetime.now()
+
+			patient_id = "emergency-" + now.strftime("%m/%d/%Y-%H:%M")
+
+
+			# print(firstname)
+			# print(lastname)
+			# print(age)
+			# print(gender)
+			# print(icu_ward)
+			# print(ward_number)
+			# print(icu_number)
+			# print(nurse_needed)
+			# print(nurse_id)
+			# print(specialization)
+			# print(doctor_id)
+			# print(message)
+
+			# make an entry in nurse's data
+			
+			collection = db["users"]
+			doc = collection.find_one({"_id": nurse_id, "flag": 5})
+			incharge_patients = doc["incharge_patients"]
+			incharge_patients[patient_id] = doctor_id
+
+			collection.update_one(
+				{"_id": nurse_id}, 
+				{"$set": {'incharge_patients': incharge_patients}}, 
+				upsert=False
+			)
+
+			# block that slot in doctor's appointments
+
+			doc = collection.find_one({"_id": doctor_id, "flag": 1})
+
+			appointments = doc["appointments"]
+
+			try:
+				appointments_today = appointments[now.date().strftime("%m/%d/%Y")]
+			except:
+				# no appointments today
+				appointments_today = {  }
+
+			start_hours = int(doc["check_in_time"].split(":")[0])
+			start_mins = int(doc["check_in_time"].split(":")[1])
+
+			end_hours = int(doc["check_out_time"].split(":")[0])
+			end_mins = int(doc["check_out_time"].split(":")[1])
+
+			if(end_mins == 0):
+				end_mins = 60
+
+			avg_time_per_patient = int(doc["avg_time_per_patient"])	
+			busy = False
+			while((start_hours < end_hours) or (not((start_hours == end_hours) and (start_mins <= end_mins)))):
+				start = str(start_hours) + ":" + str(start_mins)
+				print(start)
+				if(start_mins == 0):
+					start += '0'
+				
+				# hrs = int(start.split(":")[0])
+				# mins = int(start.split(":")[1])
+				# mins += avg_time_per_patient
+				# if(mins >= 60):
+				# 	hrs += 1
+				# 	mins = mins % 60
+				# end = str(hrs) + ":" + str(mins)	
+
+				# appointment_time = datetime.datetime.strptime(appointment_time, "%H:%M").time()
+
+				if(datetime.datetime.strptime(start, "%H:%M").time() < now.time()):
+					pass
+				else:
+					if start in appointments_today:
+						# doctor is busy in that timeslot
+						busy = True
+						break
+					else:
+						appointments_today[start] = { "patient_id": patient_id, "patient_name": firstname + " " + lastname, "details": message }
+						break
+
+				start_mins += avg_time_per_patient
+
+				if(start_mins >= 60):
+					start_hours += 1
+					start_mins = start_mins % 60
+
+			if(busy):
+				# send sms to delayed patients
+				print("Doctor has an ongoing appointment now")
+				pass
+			else:
+				appointments[now.date().strftime("%m/%d/%Y")] = appointments_today
+				collection.update_one(
+					{"_id": doctor_id}, 
+					{"$set": {'appointments': appointments}}, 
+					upsert=False
+				)	
+
+			# update emergency details
+
+			to_insert = {
+				"_id": patient_id,
+				"firstname": firstname,
+				"lastname": lastname,
+				"age": age,
+				"gender": gender,
+				"ward_number": ward_number,
+				"icu_number": icu_number,
+				"nurse_id": nurse_id,
+				"doctor_id": doctor_id,
+				"specialization": specialization,
+				"message": message,
+				"discharged": False
+			}
+
+			collection = db["emergency"]
+			collection.insert_one(to_insert)
+
+			specialities = getAllSpecializations()
+			return render_template("4_home.html", specialities=specialities, success = True)
+
+
 @app.route("/test")
 def test():
-	return render_template("doctor-patient.html")
+	_id = request.cookies.get("id")
+	appointments, name = sorted_appointments_name(_id)
+	return render_template("1_home.html", name = name, appointments=appointments)
 
 if __name__ == '__main__':
 	app.run(host="0.0.0.0", port = 5001, debug = True, threaded = True)

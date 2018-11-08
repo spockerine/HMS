@@ -1,8 +1,154 @@
-<html>
-    <head>
-        <title> Doctor Home </title>
-    </head>
-    <body>
-        <h1>Doctor Homepage</h1>
-    </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Doctor's Portal</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="/static/css/doctor.css">
+</head>
+
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+        <a class="navbar-brand" href="#">{{name}}</a>
+        </div>
+        <ul class="nav navbar-nav">
+        <li class="active"><a href="/home">Home</a></li>
+        <!-- <li><a href="#">Page 1</a></li>
+        <li><a href="#">Page 2</a></li> -->
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+        <li><a href="/logout"><span class="glyphicon glyphicon-user"></span> Log out</a></li>
+        </ul>
+    </div>
+</nav>
+
+
+
+  <div class="panel-body">
+
+    <img src='/static/images/doctor.jpg' style='position:fixed;top:0px;left:0px;width:100%;height:100%;z-index:-1;'>
+
+<div class="panel panel-primary">
+<div class="panel-heading">
+     <div class="panel-title pull-left">
+         Doctor Square
+     </div>
+    <div class="clearfix"></div>
+</div>
+</div>
+
+<div class="container mt-3">
+  <h2></h2>
+  <br>
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <a class="nav-link active" data-toggle="tab" href="#home"><h3>Appointments</h3></a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-toggle="tab" href="#menu1"><h3>Patients</h3></a>
+    </li>
+
+  </ul>
+
+<div class="tab-content">
+  <div id="home" class="container tab-pane active"><br>
+  <h1><b><u>Appointments</u></b></h1>
+  <h1><b><u>{{date}}</u></b></h1>
+  <br>
+  <input class="form-control" id="myInput1" type="text" placeholder="Search..">
+  <br>
+
+
+  <table class="container">
+	<thead>
+		<tr>
+            <th><h1>Time</h1></th>
+            <th><h1>Patient Id</h1></th>
+			<th><h1>Patient Name</h1></th>
+			<th><h1>Details</h1></th>
+		</tr>
+	</thead>
+	<tbody id="myAppt">
+        {% for time in appointments %}
+            {% if not(appointments[time]["patient_id"].startswith("emergency")) %}
+                <tr onclick="select(this)">
+                    <td>{{time}}</td>
+                    <td>{{appointments[time]["patient_id"]}}</td>
+                    <td>{{appointments[time]["patient_name"]}}</td>
+                    <td>{{appointments[time]["details"]}}</td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+	</tbody>
+  </table>
+</div>
+<div id="menu1" class="container tab-pane fade"><br>
+  <h1><b><u>Patients</u></b></h1>
+  <br>
+  <input class="form-control" id="myInput2" type="text" placeholder="Search..">
+  <br>
+  <table class="container">
+    <thead>
+      <tr>
+        <th><h1>Name</h1></th>
+        <th><h1>Contact No.</h1></th>
+        <th><h1>Remarks</h1></th>
+      </tr>
+    </thead>
+    <tbody id="myPatient">
+      <tr>
+        <td>John</td>
+        <td>9830012345</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>John</td>
+        <td>9830012345</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>John</td>
+        <td>9830012345</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>John</td>
+        <td>9830012345</td>
+        <td></td>
+      </tr>
+
+    </tbody>
+  </table>
+    </div>
+</div>
+
+
+
+<script>
+$(document).ready(function(){
+  $("#myInput1").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#myAppt tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+
+$(document).ready(function(){
+  $("#myInput2").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#myPatient tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+
+</script>
+<script src="/static/js/doctor.js"></script>
+</body>
 </html>
